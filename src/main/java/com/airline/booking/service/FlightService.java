@@ -3,6 +3,7 @@ package com.airline.booking.service;
 
 import com.airline.booking.entity.Flight;
 import com.airline.booking.repository.FlightRepository;
+import com.airline.booking.dto.CreateFlightRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,48 @@ public class FlightService {
                 );
     }
 
+    public Flight createFlight(CreateFlightRequest request) {
+
+        String origin = request.origin()
+                .trim().toUpperCase(Locale.ROOT);
+
+        String destination = request.destination()
+                .trim().toUpperCase(Locale.ROOT);
+
+        // Business rule 1: Airports must be different
+        if (origin.equals(destination)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Origin and destination cannot be the same"
+            );
+        }
+
+        // Business rule 2: Arrival must be after departure
+        if (!request.departureTime()
+                .isBefore(request.arrivalTime())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Arrival must be after departure"
+            );
+        }
+
+        // Create the Flight entity
+        Flight flight = new Flight(
+                request.flightNumber()
+                        .trim().toUpperCase(Locale.ROOT),
+                origin,
+                destination,
+                request.departureTime(),
+                request.arrivalTime(),
+                request.priceUsd(),
+                request.availableSeats()
+        );
+
+        // Save it into PostgreSQL
+        return flightRepository.save(flight);
+    }
+
     // Get all flights
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
@@ -54,7 +97,6 @@ public class FlightService {
                         )
                 );
     }
-
 
     public List<Flight> filterFlights(
             String origin,

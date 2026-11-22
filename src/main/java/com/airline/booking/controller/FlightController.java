@@ -3,14 +3,18 @@ package com.airline.booking.controller;
 
 import com.airline.booking.entity.Flight;
 import com.airline.booking.service.FlightService;
+import com.airline.booking.dto.CreateFlightRequest;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import jakarta.validation.Valid;
+
+import java.net.URI;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +30,8 @@ public class FlightController {
         this.flightService = flightService;
     }
 
+
+    //GET
     // Get all flights
     @GetMapping
     public List<Flight> getAllFlights() {
@@ -66,6 +72,22 @@ public class FlightController {
                 maxPrice,
                 minSeats
         );
+    }
+
+    //POST
+    @PostMapping
+    public ResponseEntity<Flight> createFlight(
+            @Valid @RequestBody CreateFlightRequest request) {
+
+        Flight createdFlight = flightService.createFlight(request);
+
+        URI location = URI.create(
+                "/api/flights/" + createdFlight.getId()
+        );
+
+        return ResponseEntity
+                .created(location)
+                .body(createdFlight);
     }
 
 
