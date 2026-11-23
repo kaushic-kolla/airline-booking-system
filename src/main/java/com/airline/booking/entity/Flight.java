@@ -55,6 +55,24 @@ public class Flight {
         this.availableSeats = availableSeats;
     }
 
+    public void updateDetails(
+            String flightNumber,
+            String origin,
+            String destination,
+            OffsetDateTime departureTime,
+            OffsetDateTime arrivalTime,
+            BigDecimal priceUsd,
+            Integer availableSeats) {
+
+        this.flightNumber = flightNumber;
+        this.origin = origin;
+        this.destination = destination;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.priceUsd = priceUsd;
+        this.availableSeats = availableSeats;
+    }
+
     public Long getId() {
         return id;
     }

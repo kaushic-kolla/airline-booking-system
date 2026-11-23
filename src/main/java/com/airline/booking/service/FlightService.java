@@ -8,6 +8,7 @@ import com.airline.booking.dto.CreateFlightRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -141,5 +142,55 @@ public class FlightService {
                 minSeats
         );
     }
+
+    @Transactional
+    public Flight updateFlight(
+            Long id,
+            CreateFlightRequest request) {
+
+        // Step 1: Find the existing flight
+        Flight flight = getFlightById(id);
+
+        // Step 2: Clean up airport codes
+        String origin = request.origin()
+                .trim().toUpperCase(Locale.ROOT);
+
+        String destination = request.destination()
+                .trim().toUpperCase(Locale.ROOT);
+
+        // Step 3: Validate the route
+        if (origin.equals(destination)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Origin and destination cannot be the same"
+            );
+        }
+
+        // Step 4: Validate the flight times
+        if (!request.departureTime()
+                .isBefore(request.arrivalTime())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Arrival must be after departure"
+            );
+        }
+
+        // Step 5: Update the existing flight
+        flight.updateDetails(
+                request.flightNumber()
+                        .trim().toUpperCase(Locale.ROOT),
+                origin,
+                destination,
+                request.departureTime(),
+                request.arrivalTime(),
+                request.priceUsd(),
+                request.availableSeats()
+        );
+
+        // Step 6: Persist the changes
+        return flightRepository.save(flight);
+    }
+
 
 }

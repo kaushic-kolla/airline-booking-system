@@ -30,7 +30,6 @@ public class FlightController {
         this.flightService = flightService;
     }
 
-
     //GET
     // Get all flights
     @GetMapping
@@ -89,6 +88,18 @@ public class FlightController {
                 .created(location)
                 .body(createdFlight);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Flight> updateFlight(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody CreateFlightRequest request) {
+
+        Flight updatedFlight =
+                flightService.updateFlight(id, request);
+
+        return ResponseEntity.ok(updatedFlight);
+    }
+
 
 
 }
