@@ -192,5 +192,14 @@ public class FlightService {
         return flightRepository.save(flight);
     }
 
+    @Transactional
+    public void deleteFlight(Long id) {
+
+        // Step 1: Find the flight
+        Flight flight = getFlightById(id);
+
+        // Step 2: Delete the flight from PostgreSQL
+        flightRepository.delete(flight);
+    }
 
 }

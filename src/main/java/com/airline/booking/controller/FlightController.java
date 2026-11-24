@@ -2,9 +2,9 @@
 package com.airline.booking.controller;
 
 import com.airline.booking.entity.Flight;
-import com.airline.booking.service.FlightService;
 import com.airline.booking.dto.CreateFlightRequest;
 
+import com.airline.booking.service.FlightService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -100,6 +100,16 @@ public class FlightController {
         return ResponseEntity.ok(updatedFlight);
     }
 
+//DELETE
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFlight(
+            @PathVariable("id") Long id) {
+
+        flightService.deleteFlight(id);
+
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
