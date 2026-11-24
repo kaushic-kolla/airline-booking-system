@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface FlightRepository
         extends JpaRepository<Flight, Long> {
@@ -38,4 +40,16 @@ public interface FlightRepository
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("minSeats") Integer minSeats
     );
+
+
+    @Query("""
+    SELECT f FROM Flight f
+    JOIN FETCH f.originAirport
+    JOIN FETCH f.destinationAirport
+    WHERE f.id = :id
+    """)
+    Optional<Flight> findByIdWithAirports(
+            @Param("id") Long id
+    );
+
 }

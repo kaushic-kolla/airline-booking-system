@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "flights")
 public class Flight {
@@ -72,6 +75,39 @@ public class Flight {
         this.priceUsd = priceUsd;
         this.availableSeats = availableSeats;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "origin",
+            referencedColumnName = "code",
+            insertable = false,
+            updatable = false
+    )
+    @JsonIgnore
+    private Airport originAirport;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "destination",
+            referencedColumnName = "code",
+            insertable = false,
+            updatable = false
+    )
+    @JsonIgnore
+    private Airport destinationAirport;
+
+
+    @JsonIgnore
+    public Airport getOriginAirport() {
+        return originAirport;
+    }
+
+    @JsonIgnore
+    public Airport getDestinationAirport() {
+        return destinationAirport;
+    }
+
 
     public Long getId() {
         return id;

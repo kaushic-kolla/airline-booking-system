@@ -3,6 +3,7 @@ package com.airline.booking.controller;
 
 import com.airline.booking.entity.Flight;
 import com.airline.booking.dto.CreateFlightRequest;
+import com.airline.booking.dto.FlightAirportsResponse;
 
 import com.airline.booking.service.FlightService;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,16 @@ public class FlightController {
 
     // Get flight by ID
     @GetMapping("/{id}")
-    public Flight getFlightById(@PathVariable("id") Long id) {
+    public Flight getFlightById(
+            @PathVariable("id") Long id) {
         return flightService.getFlightById(id);
+    }
+
+    @GetMapping("/{id}/airports")
+    public FlightAirportsResponse getFlightAirports(
+            @PathVariable("id") Long id) {
+
+        return flightService.getFlightAirports(id);
     }
 
     //Search flights
@@ -72,6 +81,8 @@ public class FlightController {
                 minSeats
         );
     }
+
+
 
     //POST
     @PostMapping

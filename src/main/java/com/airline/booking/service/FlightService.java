@@ -4,6 +4,8 @@ package com.airline.booking.service;
 import com.airline.booking.entity.Flight;
 import com.airline.booking.repository.FlightRepository;
 import com.airline.booking.dto.CreateFlightRequest;
+import com.airline.booking.dto.FlightAirportsResponse;
+import com.airline.booking.dto.FlightAirportsResponse.AirportInfo;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -201,5 +203,38 @@ public class FlightService {
         // Step 2: Delete the flight from PostgreSQL
         flightRepository.delete(flight);
     }
+
+
+    @Transactional(readOnly = true)
+    public FlightAirportsResponse getFlightAirports(Long id) {
+
+        // 1. Retrieve the flight and its airports
+        Flight flight = flightRepository
+                .findByIdWithAirports(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Flight not found with ID: " + id
+                        )
+                );
+
+        // 2. Convert airport entities into response objects
+        AirportInfo origin = AirportInfo.from(
+                flight.getOriginAirport()
+        );
+
+        AirportInfo destination = AirportInfo.from(
+                flight.getDestinationAirport()
+        );
+
+        // 3. Create the response
+        return new FlightAirportsResponse(
+                flight.getId(),
+                flight.getFlightNumber(),
+                origin,
+                destination
+        );
+    }
+
 
 }
